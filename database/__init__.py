@@ -1,7 +1,9 @@
-import contextlib
+from contextlib import contextmanager
+from typing import ContextManager
+
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 
 from config import DIR, DB_ECHO
 
@@ -14,13 +16,14 @@ engine = create_engine(
 )
 
 metadata = MetaData(engine)
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
 Base = declarative_base()
 
 
-# Dependency
-@contextlib.contextmanager
-def get_session():
+@contextmanager
+def get_session() -> ContextManager[Session]:
     session = SessionLocal()
     try:
         yield session
